@@ -1,0 +1,217 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pillar 4.1: Global Default-Deny Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Phase 3: Hardened Global Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedEmail() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isBootstrappedMainAdmin() {
+      return isVerifiedEmail()
+        && request.auth.token.email is string
+        && request.auth.token.email.size() <= 254
+        && request.auth.token.email == 'muhammadabdullahusmani9670@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedMainAdmin()
+        || (isVerifiedEmail() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    // Blueprint Validation Helpers (Synchronized with firebase-blueprint.json)
+    function isValidAdminProfile(data) {
+      return data.keys().hasAll(['uid', 'email', 'displayName', 'role', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'email', 'displayName', 'role', 'createdAt', 'updatedAt'])
+        && isValidId(data.uid)
+        && data.email is string && data.email.size() >= 3 && data.email.size() <= 254
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 120
+        && data.role is string && data.role.size() >= 5 && data.role.size() <= 32
+        && data.role in ['main_admin', 'customer_staff', 'order_staff', 'finance_staff', 'report_viewer']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidCloudBackupSnapshot(data) {
+      return data.keys().hasAll([
+          'backupId', 'authorUid', 'createdByEmail', 'schemaVersion',
+          'recordCountsSummary', 'sha256Checksum', 'payloadChunkCount',
+          'status', 'notes', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'backupId', 'authorUid', 'createdByEmail', 'schemaVersion',
+          'recordCountsSummary', 'sha256Checksum', 'payloadChunkCount',
+          'status', 'notes', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.backupId)
+        && isValidId(data.authorUid)
+        && data.authorUid == request.auth.uid
+        && data.createdByEmail is string && data.createdByEmail.size() >= 3 && data.createdByEmail.size() <= 254
+        && data.schemaVersion is int && data.schemaVersion >= 1 && data.schemaVersion <= 1000
+        && data.recordCountsSummary is string && data.recordCountsSummary.size() >= 1 && data.recordCountsSummary.size() <= 500
+        && data.sha256Checksum is string && data.sha256Checksum.size() == 64 && data.sha256Checksum.matches('^[a-f0-9]{64}$')
+        && data.payloadChunkCount is int && data.payloadChunkCount >= 1 && data.payloadChunkCount <= 500
+        && data.status is string && data.status.size() >= 9 && data.status.size() <= 16
+        && data.status in ['uploading', 'completed']
+        && data.notes is string && data.notes.size() <= 500
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidCloudBackupChunk(data) {
+      return data.keys().hasAll(['chunkId', 'backupId', 'authorUid', 'chunkIndex', 'data', 'createdAt'])
+        && data.keys().hasOnly(['chunkId', 'backupId', 'authorUid', 'chunkIndex', 'data', 'createdAt'])
+        && isValidId(data.chunkId)
+        && isValidId(data.backupId)
+        && isValidId(data.authorUid)
+        && data.authorUid == request.auth.uid
+        && data.chunkIndex is int && data.chunkIndex >= 0 && data.chunkIndex < 500
+        && data.data is string && data.data.size() >= 1 && data.data.size() <= 400000
+        && data.createdAt is timestamp;
+    }
+
+    function isValidCloudAuditEvent(data) {
+      return data.keys().hasAll([
+          'eventId', 'authorUid', 'actorName', 'action',
+          'entityType', 'entityId', 'summary', 'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'eventId', 'authorUid', 'actorName', 'action',
+          'entityType', 'entityId', 'summary', 'createdAt'
+        ])
+        && isValidId(data.eventId)
+        && isValidId(data.authorUid)
+        && data.authorUid == request.auth.uid
+        && data.actorName is string && data.actorName.size() >= 1 && data.actorName.size() <= 120
+        && data.action is string && data.action.size() >= 1 && data.action.size() <= 80
+        && data.entityType is string && data.entityType.size() >= 1 && data.entityType.size() <= 64
+        && data.entityId is string && data.entityId.size() >= 1 && data.entityId.size() <= 128
+        && data.summary is string && data.summary.size() >= 1 && data.summary.size() <= 1000
+        && data.createdAt is timestamp;
+    }
+
+    // 1. Verified Administrator Profiles (PII-isolated)
+    match /admins/{adminUid} {
+      allow get: if isVerifiedEmail() && isValidId(adminUid) && (request.auth.uid == adminUid || isBootstrappedMainAdmin());
+      allow list: if isBootstrappedMainAdmin();
+      allow create: if isBootstrappedMainAdmin()
+        && isValidId(adminUid)
+        && isValidAdminProfile(incoming())
+        && incoming().uid == adminUid
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidAdminProfile(incoming())
+        && isBootstrappedMainAdmin()
+        && isValidId(adminUid)
+        && incoming().uid == existing().uid
+        && incoming().email == existing().email
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'role', 'updatedAt']);
+      allow delete: if isBootstrappedMainAdmin() && isValidId(adminUid) && adminUid != request.auth.uid;
+    }
+
+    // 2. Cloud Backup Snapshot Headers
+    match /cloud_backups/{backupId} {
+      allow get: if isVerifiedEmail() && isValidId(backupId) && (isBootstrappedMainAdmin() || (existing().authorUid == request.auth.uid && isAdmin()));
+      allow list: if isVerifiedEmail() && (isBootstrappedMainAdmin() || existing().authorUid == request.auth.uid);
+      allow create: if isVerifiedEmail()
+        && isValidId(backupId)
+        && isValidCloudBackupSnapshot(incoming())
+        && incoming().backupId == backupId
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && isAdmin();
+      allow update: if isValidCloudBackupSnapshot(incoming())
+        && isVerifiedEmail()
+        && isValidId(backupId)
+        && incoming().backupId == existing().backupId
+        && incoming().authorUid == existing().authorUid
+        && incoming().createdByEmail == existing().createdByEmail
+        && incoming().schemaVersion == existing().schemaVersion
+        && incoming().recordCountsSummary == existing().recordCountsSummary
+        && incoming().sha256Checksum == existing().sha256Checksum
+        && incoming().payloadChunkCount == existing().payloadChunkCount
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          (
+            existing().status == 'uploading'
+            && incoming().status == 'completed'
+            && existing().authorUid == request.auth.uid
+            && isAdmin()
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          )
+          ||
+          (
+            isBootstrappedMainAdmin()
+            && incoming().status == existing().status
+            && incoming().diff(existing()).affectedKeys().hasOnly(['notes', 'updatedAt'])
+          )
+        );
+      allow delete: if isBootstrappedMainAdmin() && isValidId(backupId);
+
+      // 3. Subcollection: Bounded Backup Payload Chunks (Pillar 1 Master Gate)
+      match /chunks/{chunkId} {
+        allow get: if isVerifiedEmail()
+          && isValidId(backupId)
+          && isValidId(chunkId)
+          && exists(/databases/$(database)/documents/cloud_backups/$(backupId))
+          && (
+            isBootstrappedMainAdmin()
+            || (
+              isAdmin()
+              && get(/databases/$(database)/documents/cloud_backups/$(backupId)).data.authorUid == request.auth.uid
+            )
+          );
+        allow list: if isVerifiedEmail() && (isBootstrappedMainAdmin() || existing().authorUid == request.auth.uid);
+        allow create: if isVerifiedEmail()
+          && isValidId(backupId)
+          && isValidId(chunkId)
+          && isValidCloudBackupChunk(incoming())
+          && incoming().chunkId == chunkId
+          && incoming().backupId == backupId
+          && incoming().createdAt == request.time
+          && isAdmin()
+          && exists(/databases/$(database)/documents/cloud_backups/$(backupId))
+          && get(/databases/$(database)/documents/cloud_backups/$(backupId)).data.authorUid == request.auth.uid
+          && get(/databases/$(database)/documents/cloud_backups/$(backupId)).data.status == 'uploading';
+        allow update, delete: if false;
+      }
+    }
+
+    // 4. Immutable Cloud Audit Trail
+    match /audit_events/{eventId} {
+      allow get: if isVerifiedEmail() && isValidId(eventId) && (isBootstrappedMainAdmin() || (existing().authorUid == request.auth.uid && isAdmin()));
+      allow list: if isVerifiedEmail() && (isBootstrappedMainAdmin() || existing().authorUid == request.auth.uid);
+      allow create: if isVerifiedEmail()
+        && isValidId(eventId)
+        && isValidCloudAuditEvent(incoming())
+        && incoming().eventId == eventId
+        && incoming().createdAt == request.time
+        && isAdmin();
+      allow update, delete: if false;
+    }
+  }
+}

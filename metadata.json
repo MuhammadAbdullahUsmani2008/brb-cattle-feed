@@ -1,0 +1,6 @@
+{
+  "name": "BRB Feed Industry",
+  "description": "Customer ordering, account management, invoicing, payment recording, and accounting ledger system for BRB Cattle Feeds & Oil Mills.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

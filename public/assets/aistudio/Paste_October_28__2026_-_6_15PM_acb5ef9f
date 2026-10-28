@@ -1,0 +1,2054 @@
+# BRB FEED INDUSTRY
+# Complete Master Developer Prompt for Google AI Studio
+
+**Project:** BRB Feed Industry — Customer Ordering, Account Management, Invoicing and Ledger System
+
+**Business name:** BRB Feed Industry  
+**Official business heading:** BRB CATTLE FEEDS & OIL MILLS  
+**Primary audience:** BRB customers, authorized staff, administrators and main administrator  
+**Project type:** Production-oriented, full-stack business management application  
+**Implementation environment:** Google AI Studio  
+**Priority:** Functional correctness, financial integrity, security, usability and maintainability
+
+---
+
+# PART 1 — MASTER INSTRUCTIONS
+
+## 1. Your role
+
+Act as a senior full-stack software architect, UI/UX designer, database engineer, application security engineer, accounting-system developer and QA engineer.
+
+Your responsibility is to design, implement, test and prepare a complete working application for BRB Feed Industry.
+
+This is a real business transaction system, not merely a website, dashboard mockup, static prototype or collection of disconnected screens.
+
+The system must support actual customer registration, authentication, order processing, invoice creation, payment recording, ledger calculations, account management, notifications, reporting and administrative operations.
+
+Every implemented feature must work through the appropriate application interface and backend.
+
+## 2. Non-negotiable implementation rules
+
+1. Preserve every explicitly specified business requirement in this document.
+2. Do not silently remove, simplify, reinterpret or replace a requirement.
+3. Do not invent business policies where the specification identifies an unresolved decision.
+4. Do not create unnecessary features unrelated to the requirements.
+5. Do not treat mock data, hardcoded responses or simulated actions as production functionality.
+6. Do not display success messages when the underlying operation has failed.
+7. Do not expose secret keys, service credentials or privileged database credentials in frontend code.
+8. Enforce permissions on the server or trusted backend, not only through hidden buttons or frontend navigation.
+9. Preserve the original customer order request when an administrator changes quantities or adds products.
+10. Ensure invoice, payment, ledger and outstanding-balance calculations are consistent and auditable.
+11. Do not invent product names, customer records, business registration details, contact numbers, logos or financial information.
+12. Do not mark a feature complete until its implementation and relevant tests have been verified.
+13. Do not claim that deployment, SMS delivery, OTP verification, backup restoration or database persistence works unless it has actually been configured and tested.
+14. Prefer a maintainable architecture over unnecessary complexity.
+15. If the environment cannot support a required feature directly, identify the limitation and implement a clearly documented integration boundary rather than pretending the feature works.
+
+## 3. Inspect the environment before implementation
+
+Before writing substantial code:
+
+- Inspect the available Google AI Studio project files and capabilities.
+- Determine whether an existing application must be extended or a new application created.
+- Identify the available runtime, framework, package manager, backend options, database integrations and deployment capabilities.
+- Check whether any existing authentication, database, storage or API integration is already configured.
+- Inspect available secrets and environment configuration without printing their values.
+- Identify any existing code that should be preserved.
+- Produce a concise architecture proposal and implementation plan.
+
+Do not overwrite an existing working implementation without understanding it.
+
+If a technical choice is not predetermined, recommend a suitable option and explain its advantages, costs, security implications and operational requirements. Record the choice as proposed until it is accepted where the decision materially affects cost, infrastructure, data ownership or business operations.
+
+## 4. Separate the work into verified phases
+
+Implement the application in phases:
+
+1. Requirements analysis and unresolved decisions.
+2. Architecture and database design.
+3. Authentication, authorization and foundational security.
+4. Customer application.
+5. Administrative application.
+6. Orders and approval workflows.
+7. Invoices, payments and accounting ledger.
+8. Notifications and external integrations.
+9. Reports, settings and backup/restore.
+10. Testing, security verification and bug fixing.
+11. Deployment preparation and operational documentation.
+
+At the end of each phase, verify that the work functions and that existing features have not regressed.
+
+If the environment requires multiple implementation passes, maintain a checklist of completed, pending, blocked and failed requirements.
+
+---
+
+# PART 2 — UNRESOLVED DECISIONS REGISTER
+
+## 5. Do not invent these decisions
+
+Create a visible requirements register and track each item using these statuses:
+
+- Confirmed by the specification.
+- Proposed technical decision.
+- Requires business confirmation.
+- Blocked by an external dependency.
+- Implemented and verified.
+
+The following questions must be resolved before their affected production workflows are activated.
+
+### 5.1 Customer account assignment
+
+The specified account-number format begins at `BRB-C-ID131` and continues sequentially.
+
+However, the source does not establish whether every new customer should receive an account number automatically or whether customers must already have an account number assigned by BRB.
+
+The registration process requires customers to enter their BRB account number.
+
+Do not invent a registration policy that contradicts this process.
+
+Propose a secure workflow in which BRB can pre-register eligible customers or securely assign their account numbers. Ask for confirmation of how initial customer records are created and how the business verifies ownership of an account number and mobile number.
+
+### 5.2 Technology and hosting
+
+Select a suitable full-stack architecture compatible with the actual environment.
+
+If Google AI Studio supports only part of the required infrastructure, identify which external services are necessary.
+
+Do not assume that Google AI Studio itself provides a complete production database, unrestricted backend hosting, SMS gateway, file storage or scheduled backup service.
+
+### 5.3 OTP and SMS provider
+
+The business requires mobile OTP verification and SMS notifications.
+
+The actual provider, credentials, sender ID, pricing, supported Pakistani mobile networks, message templates and delivery-report capabilities are not specified.
+
+Implement an integration interface and configuration requirements. Do not invent credentials or report successful delivery without provider confirmation.
+
+### 5.4 Administrative roles
+
+The specification requires staff/admin accounts and a main administrator, but it does not fully define individual permissions.
+
+Propose a least-privilege permission matrix. Obtain confirmation before granting sensitive financial, user-management or backup-restoration permissions.
+
+### 5.5 Accounting policies
+
+The specification defines invoice debits and payment credits but does not fully define:
+
+- Opening balances and migration of existing customer accounts.
+- Overpayments and negative outstanding balances.
+- Payment allocation when multiple invoices exist.
+- Partial payments and invoice settlement.
+- Invoice correction and cancellation after posting.
+- Payment reversal and refund procedures.
+- Whether posted transactions can be edited directly or must be corrected through adjustment entries.
+- Currency precision, rounding and tax treatment.
+
+Do not invent tax rules, payment allocation policies or credit policies.
+
+Recommend safe accounting controls and identify which policies need approval.
+
+### 5.6 Order and invoice relationship
+
+The system must support invoicing an approved order and creating invoices independently for offline sales.
+
+The following remain unresolved:
+
+- Whether one order can produce multiple invoices.
+- Whether one invoice can combine multiple orders.
+- How partially delivered quantities affect invoices.
+- Whether a confirmed order may be revised and how revisions are recorded.
+- How an invoice relates to cancelled or incomplete orders.
+
+Design the data model to avoid unnecessary restrictions, but do not enable conflicting business workflows before their rules are confirmed.
+
+### 5.7 Currency, timezone and dates
+
+The source uses `Rs.` in its examples and Urdu messages.
+
+Confirm the formal currency, timezone, invoice date policy and accounting period rules. Use configurable settings where appropriate.
+
+Do not hardcode assumptions about tax rates or fiscal-year boundaries.
+
+### 5.8 Deployment and operations
+
+Confirm the production domain, database project, storage provider, backup destination, deployment owner and operational access requirements.
+
+Do not deploy to a public production environment or use real customer data without appropriate authorization and configuration.
+
+---
+
+# PART 3 — BRANDING AND USER EXPERIENCE
+
+## 6. Business identity
+
+Use the following names consistently:
+
+- Application name: BRB Feed Industry
+- Main business heading: BRB CATTLE FEEDS & OIL MILLS
+- Invoice heading: BRB Cattle Feed & Oil Mills
+
+Use the official BRB logo supplied by the business.
+
+Do not generate a substitute logo and present it as the official brand asset.
+
+The main administrator must be able to upload, replace and remove the logo. Logo changes must propagate to the appropriate branding areas and invoice generation.
+
+If no official logo is available during development, use a clearly identified temporary placeholder that can be replaced without changing application code.
+
+## 7. Visual design
+
+Create a professional, modern, clean, business-oriented interface.
+
+The design must be:
+
+- Easy to understand for ordinary customers.
+- Suitable for Android phones and small screens.
+- Fully responsive on desktop, tablet and mobile.
+- Consistent across customer and administrative interfaces.
+- Suitable for business transactions and financial information.
+- Accessible, with readable text, appropriate contrast, keyboard navigation and clear validation messages.
+
+Use a consistent design system with reusable components, typography, spacing, buttons, forms, tables, dialogs, notifications and status indicators.
+
+The login screen must contain the specifically requested yellow strip with black business-heading text and the BRB logo.
+
+Use the yellow brand treatment consistently where appropriate, without making every screen visually overwhelming.
+
+Do not place unnecessary decorations, animations or complex navigation ahead of essential business actions.
+
+## 8. Application states
+
+Every data-driven screen must handle:
+
+- Initial loading.
+- Empty results.
+- Search results.
+- Validation errors.
+- Network or server failures.
+- Unauthorized access.
+- Expired sessions.
+- Successful operations.
+- Unavailable or deactivated products.
+- Pending approvals.
+- Disabled or blocked accounts.
+
+Use confirmation dialogs for destructive actions and meaningful success/error messages.
+
+Do not show fabricated balances, orders, customers or delivery statuses.
+
+If demonstration data is necessary, clearly separate it from production data and never use it as a substitute for a working backend.
+
+---
+
+# PART 4 — SYSTEM STRUCTURE
+
+## 9. Two distinct application areas
+
+The application must contain two separate areas.
+
+### A. Customer application
+
+Customers can:
+
+- Register and log in.
+- View their own account.
+- Browse products.
+- Place orders.
+- View submitted and approved orders.
+- Track order status.
+- View invoices.
+- View payment records.
+- View their ledger.
+- View outstanding balance.
+- Receive app notifications and SMS notifications.
+- View notification history.
+- View relevant account and transaction details.
+
+Customers must only access their own information.
+
+### B. Administrative application
+
+Authorized administrators can manage:
+
+- Customers.
+- Products.
+- Orders.
+- Invoices.
+- Payments.
+- Ledger and accounting records.
+- Notifications.
+- Reports.
+- Staff/admin accounts.
+- Branding and application settings.
+- Invoice settings and PDF design.
+- Backup and restoration.
+
+Use separate customer and administrator login experiences. Use separate authorization boundaries even if the application shares a common backend.
+
+A customer must never gain administrative privileges by changing a URL, request parameter, local storage value or frontend state.
+
+---
+
+# PART 5 — CUSTOMER ACCOUNTS AND AUTHENTICATION
+
+## 10. Automatic customer account numbers
+
+Generate customer account numbers in this format:
+
+- `BRB-C-ID131`
+- `BRB-C-ID132`
+- `BRB-C-ID133`
+- `BRB-C-ID134`
+
+Continue sequentially.
+
+The administrator should not manually type the account number during normal customer creation.
+
+Use a backend-controlled sequence or equivalent atomic allocation mechanism. Prevent duplicate account numbers under concurrent requests.
+
+Never generate authoritative account numbers using only client-side counters.
+
+The starting sequence and migration behavior must be configurable during initial setup.
+
+## 11. Customer login
+
+Create a customer login screen containing:
+
+- Yellow strip.
+- Black text: `BRB CATTLE FEEDS & OIL MILLS`.
+- BRB logo.
+- Account Number / Username field.
+- Password field.
+- LOGIN button.
+- Forgot Password?
+- New Customer? Register Here.
+
+Customer authentication uses the BRB account number and password.
+
+The account must be approved and active before login is allowed.
+
+Display clear messages for invalid credentials, pending approval, rejection and blocked accounts without exposing unnecessary internal information.
+
+## 12. Customer registration
+
+Registration fields:
+
+- BRB Account Number.
+- Mobile Number.
+- Create Password.
+- Confirm Password.
+- Register button.
+
+Required process:
+
+**Registration → Mobile OTP → Admin Approval → Account Activated**
+
+Administrators must be able to approve or reject registration requests.
+
+Approved customers may log in when their accounts are active and otherwise eligible.
+
+Rejected customers must not be able to activate their accounts or bypass approval.
+
+Prevent duplicate or unauthorized account registrations.
+
+The system must verify the relationship between the submitted account number and registered customer record according to the confirmed business policy.
+
+At the bottom of the registration screen, display this exact Urdu message:
+
+`اپنا BRB اکاؤنٹ نمبر معلوم کرنے کے لیے اس نمبر پر واٹس ایپ میسج کریں۔`
+
+The WhatsApp number must be configurable by the administrator.
+
+Do not invent the number. If configured, provide a usable WhatsApp contact link. If it is not configured, clearly indicate that configuration is required.
+
+## 13. OTP verification
+
+Implement mobile OTP verification through a real, configurable provider.
+
+Requirements:
+
+- Generate OTPs securely.
+- Associate each OTP with the intended account, phone number and purpose.
+- Enforce expiry.
+- Limit verification attempts.
+- Apply resend cooldowns and rate limits.
+- Prevent reuse of expired or consumed OTPs.
+- Avoid exposing OTPs in production logs.
+- Handle provider failures explicitly.
+- Prevent OTP brute-force attempts.
+- Record relevant security events.
+
+OTP lifetime, attempt limits and resend limits must be configurable.
+
+Use development-only verification mechanisms only in a clearly isolated development environment.
+
+## 14. Forgot password
+
+The customer enters:
+
+- Account Number.
+- Registered Mobile Number.
+
+Process:
+
+**OTP → New Password → Confirm Password → Password Updated**
+
+Verify the account and registered mobile number through the configured secure process.
+
+Do not reveal whether an account or phone number exists through unnecessarily detailed public error messages.
+
+After a successful reset, invalidate relevant recovery tokens and follow the configured session-revocation policy.
+
+Send the required notification only when the event actually occurs.
+
+## 15. Account blocking
+
+Administrators can block and unblock customers.
+
+Blocked customers must not be able to log in or continue using protected customer functionality through an existing session.
+
+Display this exact Urdu message:
+
+`آپ کا اکاؤنٹ فی الحال Block ہے۔ براہِ کرم BRB سے رابطہ کریں۔`
+
+Enforce blocking in the backend on protected requests, not merely on the login screen.
+
+Record who blocked or unblocked the customer, when the action occurred and any applicable administrative reason.
+
+The account must remain blocked until an authorized administrator unblocks it.
+
+---
+
+# PART 6 — CUSTOMER APPLICATION
+
+## 16. Customer home screen
+
+The home screen must contain:
+
+- BRB branding.
+- BRB logo.
+- Notification icon.
+- Customer name.
+- Customer account number.
+- Current outstanding balance.
+- Prominent NEW ORDER button.
+- Product List.
+- Recent Orders.
+- Latest Invoice.
+- My Account / Ledger.
+- Notifications.
+
+Bottom navigation:
+
+**Home | Products | Orders | Account**
+
+**Critical restriction:** Product prices must never appear on the customer home screen.
+
+Display only information that belongs to the authenticated customer.
+
+The outstanding balance must come from authoritative backend accounting data.
+
+## 17. Customer product list
+
+Separate products into two categories:
+
+1. BRB Cattle Feed.
+2. BRB Oil Mill.
+
+Customers must browse these categories separately.
+
+Product cards may display:
+
+- Product image.
+- Product name.
+- Weight/packing.
+- Usage: Milk / Meat / Both.
+- Brief description.
+
+Customers may open Product Details.
+
+Do not display product prices, price lists, rates or other confidential commercial pricing information anywhere in the customer-facing product browsing and ordering experience.
+
+## 18. Product details
+
+Display:
+
+- Product image.
+- Product name.
+- Category.
+- Packing/weight.
+- Usage.
+- Short description.
+- Full product details.
+
+Do not display the product price.
+
+When a product is deactivated by an administrator:
+
+- Keep the product visible.
+- Keep its image visible.
+- Keep its information visible.
+- Display `Currently Unavailable`.
+- Prevent it from being selected for a new order.
+
+When the administrator activates the product again, it becomes orderable.
+
+Enforce product availability in the backend during order submission as well as in the user interface.
+
+---
+
+# PART 7 — PRODUCT MANAGEMENT
+
+## 19. Administrative product management
+
+Administrators can:
+
+- Add products.
+- Edit products.
+- Delete products.
+- Activate products.
+- Deactivate products.
+- Upload and change product images.
+- Change product name.
+- Change category.
+- Change packing/weight.
+- Change usage.
+- Change descriptions and product details.
+
+Allowed categories:
+
+- BRB Cattle Feed.
+- BRB Oil Mill.
+
+Allowed usage values:
+
+- Milk.
+- Meat.
+- Both.
+
+Validate all product fields on the backend.
+
+Support safe image uploads with appropriate file-type validation, file-size limits and access controls.
+
+Do not maintain customer-facing product prices as part of the product catalog.
+
+Rates are entered during invoice creation because rates may change.
+
+Do not physically erase historical transaction information or break existing order/invoice references when a product is discontinued. If deletion is unsafe because the product has historical usage, use an appropriate archival or deactivation approach and explain the behavior.
+
+---
+
+# PART 8 — CUSTOMER ORDERING
+
+## 20. New order creation
+
+Customers select:
+
+- Product.
+- Quantity.
+
+Customers can select multiple products in a single order.
+
+One order can contain products from both categories:
+
+- BRB Cattle Feed.
+- BRB Oil Mill.
+
+Prices must remain hidden.
+
+Before submission, display a complete order review containing the selected products and quantities.
+
+Provide a SUBMIT ORDER confirmation action.
+
+Validate quantities and product availability on the backend.
+
+Reject invalid, zero, negative or otherwise disallowed quantities.
+
+Do not invent a minimum order quantity, stock-management system or delivery-fee calculation unless those rules are separately approved.
+
+After successful submission:
+
+- Generate a unique order number.
+- Persist the order and its original requested items.
+- Record its submission date and time.
+- Assign the initial status `Order Received`.
+- Generate the required app notification.
+- Trigger the configured SMS notification workflow.
+
+If the operation fails, do not display a successful submission message or create duplicate orders on retry.
+
+## 21. Administrative new orders
+
+The admin dashboard must prominently show:
+
+**NEW ORDERS**
+
+Display a pending count.
+
+The order list must contain:
+
+- Customer name.
+- Account number.
+- Order number.
+- Date.
+- Time.
+- Status.
+- Requested products.
+- Requested quantities.
+
+Opening an order must show its complete details.
+
+Provide appropriate search, filtering, sorting and pagination when necessary.
+
+Display current status and preserve the order's original request.
+
+## 22. Order review and approval
+
+Administrators can independently modify each requested quantity during order approval.
+
+Example:
+
+Original request:
+
+- Gold: 10 bags.
+- Wanda: 20 bags.
+
+Approved order:
+
+- Gold: 5 bags.
+- Wanda: 15 bags.
+
+Administrators may also add another product, for example:
+
+- Shahi Special: 5 bags.
+
+Every product added by the administrator must clearly display:
+
+**Added by BRB**
+
+Preserve the customer's original request as immutable historical data.
+
+Store the approved quantities and administrator-added items separately from the original request.
+
+The customer must be able to compare:
+
+**Original Request**
+
+- Requested: 10 bags.
+
+**Approved Order**
+
+- Approved: 5 bags.
+
+For full approval, show:
+
+- Requested: 10 bags.
+- Approved: 10 bags.
+- Status: Fully Approved.
+
+For partial approval, show:
+
+- Requested: 10 bags.
+- Approved: 5 bags.
+- Status: 5 Bags Approved.
+
+Use clear, item-level differences where quantities change.
+
+Do not overwrite original request values when an administrator approves or edits an order.
+
+Record who approved the order and when.
+
+## 23. Mandatory quantity-reduction reason
+
+If an administrator reduces a requested quantity, a reason is mandatory.
+
+Example:
+
+- Requested: 10 bags.
+- Approved: 5 bags.
+
+Example reason:
+
+`Stock کم ہونے کی وجہ سے 5 Bags approve کیے گئے۔`
+
+Do not allow an order with a reduced requested quantity to be saved unless the required reason has been supplied.
+
+Validate the rule on the backend.
+
+If the full requested quantity is approved, a reduction reason is not required.
+
+If the administrator adds a product, label it `Added by BRB` and preserve the identity of the administrator who added it.
+
+The exact handling of a requested quantity reduced to zero should be documented and confirmed as part of the order policy.
+
+## 24. Order statuses
+
+Use the specified statuses:
+
+1. Order Received.
+2. Under Review.
+3. Confirmed / Partially Approved.
+4. Preparing.
+5. Dispatched.
+6. Delivered.
+7. Cancelled.
+
+Maintain an explicit, validated status-transition policy.
+
+The customer must be able to view the current status.
+
+Do not permit arbitrary status changes that bypass required approval or business rules.
+
+Record status changes, timestamps and the responsible actor.
+
+The customer-facing order history must preserve cancelled orders.
+
+## 25. Customer order cancellation
+
+Customers can cancel an order only while its status is:
+
+- Order Received.
+- Under Review.
+
+Once the order reaches any of these statuses, customer cancellation is not allowed:
+
+- Confirmed / Partially Approved.
+- Preparing.
+- Dispatched.
+- Delivered.
+
+Cancelled orders must remain permanently in the customer's order history with status `Cancelled`.
+
+Enforce the cancellation rules on the backend.
+
+Prevent concurrent requests from allowing cancellation and confirmation to succeed incompatibly.
+
+Do not invent additional cancellation rights or automatic refund behavior.
+
+If an administrator needs to cancel or reverse a confirmed order, identify the relevant policy as requiring business confirmation.
+
+---
+
+# PART 9 — INVOICE MANAGEMENT
+
+## 26. Two invoice creation methods
+
+Invoices must not depend exclusively on orders submitted through the customer application.
+
+Implement both methods.
+
+### Method A — Invoice from approved order
+
+**Approved Order → Create Invoice**
+
+Allow an authorized administrator to initiate invoice creation from an eligible approved order.
+
+Show the relevant customer and approved order details.
+
+Do not silently invoice unapproved quantities.
+
+Prevent accidental duplicate invoicing of the same quantities according to the confirmed order/invoice policy.
+
+### Method B — Independent invoice
+
+Provide an administrative **New Invoice** workflow:
+
+**New Invoice → Select Customer → Select Products → Enter Quantity → Enter Rate → Create Invoice**
+
+This workflow is required for sales arranged through:
+
+- Phone.
+- WhatsApp.
+- Manual arrangements.
+- Other offline arrangements.
+
+These transactions must be recorded even when no customer-app order exists.
+
+Do not require an order record for every independently created invoice.
+
+## 27. Customer selection
+
+When creating an invoice, provide:
+
+- Customer list.
+- Customer search.
+
+After customer selection, show:
+
+- Customer name.
+- Account number.
+- Current outstanding balance.
+
+The administrator then adds invoice line items:
+
+- Product.
+- Quantity.
+- Rate.
+
+Calculate:
+
+- Product total.
+- Grand total.
+
+Calculate totals using authoritative backend logic and decimal-safe monetary arithmetic.
+
+Do not trust totals submitted by the frontend.
+
+Validate product, quantity and rate values before saving.
+
+The policy for historical or deactivated products used in a legitimate offline transaction must be documented. Do not silently substitute a different product.
+
+## 28. Invoice numbering
+
+During initial system setup, the main administrator selects the starting invoice number.
+
+Example starting number:
+
+`5001`
+
+Subsequent numbers:
+
+- 5001.
+- 5002.
+- 5003.
+- 5004.
+
+Continue sequentially.
+
+The initial invoice number must be configurable during setup.
+
+Use backend-controlled atomic number allocation to prevent duplicate numbers during concurrent invoice creation.
+
+Never generate invoice numbers using client-side counters.
+
+Invoice numbers must remain stable and unique according to the approved policy.
+
+If an invoice is corrected or cancelled, do not reuse its number.
+
+## 29. Invoice contents
+
+Each invoice must include:
+
+- BRB logo.
+- BRB Cattle Feed & Oil Mills.
+- Customer name.
+- Customer account number.
+- Invoice number.
+- Invoice date.
+- Products.
+- Quantity.
+- Rate.
+- Product-wise total.
+- Grand total.
+
+Support professional output suitable for:
+
+- PDF.
+- Printing.
+- Digital sharing.
+
+Display the applicable currency consistently.
+
+Do not invent tax registrations, addresses, tax amounts, bank details, payment instructions or legal declarations.
+
+Provide configurable business details where needed and clearly indicate missing required information.
+
+## 30. Invoice design
+
+Do not design the invoice as a plain, basic white receipt.
+
+Use a professional, colorful, premium business invoice design.
+
+The first page must begin with:
+
+1. A yellow line.
+2. Immediately below it, the BRB logo.
+3. A large business title: `BRB Cattle Feed & Oil Mills`.
+
+Provide administrator controls for:
+
+- Upload logo.
+- Change logo.
+- Remove logo.
+- Invoice header settings.
+- Invoice design/PDF settings.
+
+Generate consistent output across screen preview, PDF and print.
+
+Handle long product names, multiple line items, page breaks, repeated headers, totals and text wrapping.
+
+Do not allow the invoice's displayed totals to differ from the stored financial transaction.
+
+If an invoice spans multiple pages, maintain a readable, professional layout.
+
+---
+
+# PART 10 — ACCOUNTING AND LEDGER
+
+## 31. Invoice accounting workflow
+
+When an invoice is saved successfully, the required workflow is:
+
+**Invoice → Ledger Debit → Outstanding Balance Updated → App Notification → SMS Notification**
+
+Example notification:
+
+`آپ کے اکاؤنٹ میں Rs. 85,000 کی نئی Invoice شامل کی گئی ہے۔`
+
+The notification must reflect the actual saved invoice amount.
+
+The customer can open the notification and view the complete invoice.
+
+Customers cannot edit invoices.
+
+Authorized administrators can edit invoices, subject to the confirmed posting and correction policy.
+
+Invoice edits must update accounting records correctly and be activity-logged.
+
+### Financial integrity requirements
+
+- Save the invoice and its accounting effect atomically.
+- Prevent duplicate ledger postings.
+- Recalculate the balance from authoritative accounting records or a reliably maintained transactional balance.
+- Ensure that the balance cannot become inconsistent with posted invoices and payments.
+- Preserve an audit trail of changes.
+- Do not allow customers to submit or modify invoice totals.
+- Prevent an invoice update from applying its debit twice.
+- Make concurrent financial transactions safe.
+- Handle failed notification delivery independently of successful invoice posting.
+
+Do not implement arbitrary direct ledger editing as a substitute for invoice corrections.
+
+## 32. Payment management
+
+Provide a separate administrative **ADD PAYMENT** option.
+
+Customer selection must provide:
+
+- Customer list.
+- Search.
+
+After selecting a customer, display the current outstanding balance.
+
+Payment form fields:
+
+- Customer name.
+- Account number.
+- Current outstanding balance.
+- Payment amount.
+- Payment date.
+- Payment method.
+- Reference / transaction number.
+- Remarks / admin note.
+- Save Payment.
+
+Allowed payment methods:
+
+- Cash.
+- Bank Transfer.
+- Cheque.
+- Online Payment.
+- Other.
+
+Validate required fields and monetary values.
+
+Store payment references where applicable.
+
+Do not invent a payment gateway or treat a manually recorded online payment as automatically verified by a bank.
+
+## 33. Payment accounting workflow
+
+When a payment is saved:
+
+**Payment → Ledger Credit → Outstanding Balance Updated → App Notification → SMS Notification**
+
+The customer receives a payment notification.
+
+Administrators can edit payments subject to the approved accounting policy.
+
+Customers cannot edit or delete payment records.
+
+Payment changes must be activity-logged.
+
+### Required controls
+
+- Save the payment and its accounting effect atomically.
+- Prevent duplicate payment recording on retries.
+- Prevent double crediting.
+- Maintain a traceable relationship between payment and ledger entry.
+- Recalculate the outstanding balance correctly after an authorized correction.
+- Preserve the original transaction and correction history.
+- Record the administrator responsible for each change.
+- Do not let an SMS failure reverse a successfully recorded payment.
+
+## 34. Customer ledger
+
+Customers can view up to the latest 12 months / one year of account history.
+
+Display:
+
+- Invoice.
+- Debit.
+- Payment.
+- Credit.
+- Date.
+- Invoice number.
+- Payment details.
+- Running balance.
+- Current outstanding balance.
+
+Customers cannot edit or delete ledger entries.
+
+The normal customer view must not show records older than 12 months.
+
+The administrator system must retain older records and allow authorized retrieval.
+
+Apply the 12-month restriction to the backend query or API, not merely to the visible interface.
+
+Historical records must remain available for authorized administrative reporting.
+
+The precise treatment of records at the 12-month boundary should follow the confirmed timezone and date policy.
+
+## 35. Ledger search and filtering
+
+### Customer filters
+
+Customers can use:
+
+- Search.
+- Date filter.
+- Invoices.
+- Payments.
+
+### Administrative search
+
+Administrators can search by:
+
+- Customer name.
+- Account number.
+- Invoice number.
+- Payment reference number.
+
+Date filters:
+
+- Today.
+- This Week.
+- This Month.
+- Custom Date Range.
+
+Perform filtering and authorization safely in the backend.
+
+Use efficient queries and pagination for large histories.
+
+Ledger changes should normally arise from invoice or payment transactions rather than arbitrary manual edits.
+
+If exceptional adjustments are required, implement them only after the adjustment policy and required permissions have been confirmed.
+
+## 36. Customer outstanding balance
+
+Display the current outstanding balance on the customer home screen and account screen.
+
+The amount must reflect the authoritative accounting state.
+
+Define the balance formula in accordance with the approved opening-balance and accounting policies. At minimum, the intended relationship is:
+
+**Outstanding balance = applicable opening balance + posted invoice debits − posted payment credits + approved accounting adjustments.**
+
+This is a proposed accounting model, not authorization to invent opening balances or adjustment rules.
+
+Do not include draft or failed transactions in the posted balance.
+
+Use decimal-safe arithmetic and consistent currency precision.
+
+Ensure that the ledger running balance and displayed current balance agree.
+
+---
+
+# PART 11 — CUSTOMER ACCOUNT SCREEN
+
+## 37. Account page
+
+Display:
+
+- Customer name.
+- BRB account number.
+- Current outstanding balance.
+
+Provide sections for:
+
+- Account History / Ledger.
+- Invoice History.
+- Payment History.
+- Orders.
+- Notifications.
+
+Customers must only see their own records.
+
+All customer-specific requests must be authorized against the authenticated account.
+
+Do not accept a client-supplied customer ID as proof of permission.
+
+Provide appropriate empty states and loading/error handling for each section.
+
+---
+
+# PART 12 — NOTIFICATIONS
+
+## 38. Required automatic notifications
+
+The system must generate app notifications and SMS notifications for the following important events, subject to actual event occurrence and provider configuration:
+
+- Registration Approved.
+- Registration Rejected.
+- Account Blocked.
+- Account Unblocked.
+- Order Received.
+- Order Under Review.
+- Order Confirmed / Partially Approved.
+- Order Preparing.
+- Order Dispatched.
+- Order Delivered.
+- Approved Order.
+- New Invoice Added.
+- Invoice Edited / Updated.
+- Payment Received.
+- Payment Edited / Updated.
+- Password Reset / Changed.
+
+Avoid sending duplicate messages when a transaction is retried.
+
+Do not expose passwords, OTPs or other secrets in notifications.
+
+Use the configured recipient contact information and appropriate message templates.
+
+## 39. Customer notification center
+
+Provide a notification center showing:
+
+- Notification title.
+- Message.
+- Date.
+- Time.
+
+Save notifications in persistent history.
+
+Tapping a notification must open the relevant authorized information.
+
+Examples:
+
+- Invoice Notification → Full Invoice.
+- Payment Notification → Payment Details / Receipt.
+- Order Notification → Order / Approved Order.
+
+Check authorization again when the target record is opened.
+
+A notification must not grant access to a record that the customer cannot otherwise view.
+
+## 40. Administrative notification management
+
+Administrators can:
+
+- Send notifications to customers.
+- View notification history.
+- See recipient.
+- See date/time.
+- See app-delivery status where supported.
+- See SMS-delivery status where supported.
+
+Record automatically generated notifications as well as manually sent notifications.
+
+The SMS provider integration must be configurable.
+
+Maintain separate states for the business transaction, notification creation, provider submission and confirmed delivery where the provider supports those distinctions.
+
+Do not claim a message was delivered merely because the application attempted to send it.
+
+Use a reliable retry strategy and prevent duplicate messages when handling provider callbacks.
+
+---
+
+# PART 13 — ADMINISTRATIVE AUTHENTICATION AND PERMISSIONS
+
+## 41. Separate admin login
+
+The Admin Panel must be completely separate from the customer login experience.
+
+Admin login fields:
+
+- Username / Email.
+- Password.
+- Login.
+- Forgot Password.
+- OTP / Two-Step Verification.
+
+Customer accounts must never be able to access the Admin Panel.
+
+Administrative privileges must be granted only through trusted, controlled role assignments.
+
+Do not allow public registration to create an administrator.
+
+Do not grant administrator permissions merely because a user knows a URL, username, account number or client-side flag.
+
+## 42. Role-based access control
+
+Provide a secure role and permission model for staff/admin accounts.
+
+The exact business role hierarchy requires confirmation.
+
+Propose permissions for the following categories:
+
+- Main administrator.
+- Customer-management staff.
+- Order-management staff.
+- Invoice/payment staff.
+- Read-only reporting staff.
+
+These are proposed roles, not confirmed business roles. The main administrator must be able to configure permitted staff access according to the approved policy.
+
+Enforce permissions on every sensitive backend operation.
+
+Protect financial editing, account blocking, role changes, system settings, exports, backups and restoration.
+
+Record sensitive administrative actions.
+
+## 43. Administrative security
+
+Implement:
+
+- Secure password hashing using a reputable authentication system.
+- Secure session management.
+- Protected administrative routes and APIs.
+- Rate limiting on login and recovery.
+- Two-step verification for administrators.
+- Secure session expiration and logout.
+- Appropriate session revocation after sensitive changes.
+- Audit logging.
+- Server-side input validation.
+- Protection against injection, cross-site scripting and cross-site request forgery where applicable.
+- Secure secret management.
+- Safe error responses that do not expose internal stack traces or sensitive data.
+
+Do not build a custom password-storage mechanism when a suitable, secure authentication provider is available.
+
+If using an external authentication service, configure the required role checks and backend authorization separately.
+
+---
+
+# PART 14 — ADMIN DASHBOARD
+
+## 44. Dashboard layout
+
+The admin dashboard must display:
+
+- BRB logo.
+- BRB Cattle Feed & Oil Mills.
+- Admin name.
+- Notifications.
+- Profile.
+- Logout.
+
+Display these statistics:
+
+- Total Customers.
+- Active Customers.
+- Blocked Customers.
+- Pending Registrations.
+- New Orders.
+- Pending Invoices.
+- Outstanding Amount.
+- Recent Payments.
+- Recent Notifications.
+
+Make NEW ORDERS and the pending count prominent.
+
+Statistics must be derived from real persisted data.
+
+Define the meaning of each statistic consistently. Do not create misleading counts from mock data.
+
+The source ends during the dashboard requirements at the phrase `Quick Acti`. Do not assume what the missing quick-action list contained. Propose useful actions such as Add Customer, New Invoice and Add Payment for confirmation or implement them only where they are already required elsewhere in this specification.
+
+---
+
+# PART 15 — ADDITIONAL ADMINISTRATION REQUIREMENTS
+
+## 45. Customer management
+
+Provide administrative functions for viewing and managing customer records and registration requests.
+
+At minimum, support the specified workflows:
+
+- View customer information.
+- Review pending registrations.
+- Approve or reject registrations.
+- Block and unblock accounts.
+- Search customers.
+- Access authorized customer order, invoice, payment and ledger information.
+
+Preserve the generated account number and historical transaction relationships.
+
+Do not invent customer identity fields, mandatory legal documents or approval requirements that are not specified.
+
+## 46. Product and order administration
+
+Integrate product management and order approval with the administrative dashboard.
+
+Authorized staff must be able to inspect the full original request and approved quantities.
+
+Use clear status labels, search/filter controls and validation messages.
+
+Do not allow an order-management screen to bypass the immutable-request and mandatory-reduction-reason rules.
+
+## 47. Invoice and payment administration
+
+Provide separate, clearly identifiable actions for:
+
+- New Invoice.
+- Create Invoice from Approved Order.
+- Add Payment.
+
+The invoice and payment workflows must display the selected customer and account number before submission.
+
+Show the current outstanding balance to help the administrator understand the account position.
+
+Make clear whether an amount is a draft value or a posted financial transaction.
+
+## 48. Reports
+
+The original requirements explicitly include Reports as an administrative management area, but do not specify a complete report catalog.
+
+Provide a report framework based on available persisted data.
+
+Potential reports to propose for confirmation include:
+
+- Customer balances.
+- Invoice history.
+- Payment history.
+- Order status.
+- Outstanding balances.
+- Ledger statements.
+
+Do not invent sales metrics, stock reports, profit calculations, taxes or financial statements whose data requirements and accounting definitions have not been approved.
+
+Reports must respect permissions and filters and must reconcile with the underlying records.
+
+## 49. Settings
+
+Provide an administrative settings area for the explicitly required configurable items:
+
+- BRB logo.
+- WhatsApp contact number.
+- Initial invoice-number sequence.
+- Applicable invoice header settings.
+- Invoice design/PDF settings.
+- SMS provider configuration.
+- Other confirmed system settings.
+
+Secure sensitive configuration. Secret credentials must not be exposed in the browser or returned to ordinary administrative screens.
+
+Record important settings changes.
+
+---
+
+# PART 16 — DATABASE AND DATA MODEL
+
+## 50. Design the database before building dependent features
+
+Produce a documented schema and relationship diagram before implementing all business workflows.
+
+Choose the database based on the actual environment and requirements. A relational database is a strong candidate because the application requires financial transactions, referential integrity, sequential identifiers, reporting and consistent ledger updates.
+
+Do not assume that a particular database has already been configured.
+
+Use migrations or an equivalent reproducible schema-management approach.
+
+## 51. Required logical entities
+
+Design an appropriate data model covering at least these logical entities. These are required concepts, not a demand that every concept must map to a separate physical table.
+
+### Authentication and administration
+
+- Authentication identities.
+- Customer profiles.
+- Staff/admin profiles.
+- Roles and permissions.
+- Sessions or authentication-related records where appropriate.
+
+### Products
+
+- Products.
+- Product categories.
+- Product image references.
+- Product activation state.
+
+### Orders
+
+- Orders.
+- Immutable original requested items.
+- Approved order items.
+- Administrator-added items.
+- Quantity-reduction reasons.
+- Order status history.
+
+### Invoices
+
+- Invoices.
+- Invoice line items.
+- Invoice numbering sequence.
+- Invoice correction or revision history.
+- Invoice-to-order relationships where applicable.
+
+### Payments and accounting
+
+- Payments.
+- Payment correction or reversal records where approved.
+- Ledger entries.
+- Opening balances where approved.
+- Running/current balance support.
+- Accounting audit records.
+
+### Notifications
+
+- Notifications.
+- Notification recipients.
+- Delivery attempts and statuses.
+- Provider references or callbacks where supported.
+
+### System operations
+
+- Application settings.
+- Audit logs.
+- Backup metadata or operational records where applicable.
+
+## 52. Data integrity
+
+Enforce:
+
+- Unique customer account numbers.
+- Unique invoice numbers.
+- Unique order numbers.
+- Foreign-key or equivalent relationship integrity.
+- Valid quantity and monetary values.
+- Valid transaction statuses.
+- Correct customer ownership.
+- Correct relationships between invoices, payments and ledger entries.
+- Reliable transaction boundaries for financial operations.
+- Protection against duplicate submissions.
+
+Use indexes for frequent searches, customer histories, order status, invoice lookup, payment reference lookup and date-based reporting.
+
+Avoid loading all customers or ledger entries into the browser when server-side search and pagination are appropriate.
+
+## 53. Historical data preservation
+
+Preserve original order requests and financial audit history.
+
+Do not physically delete posted invoices, posted payments or ledger history through ordinary customer or staff actions.
+
+Implement correction and reversal behavior only according to the approved accounting policy.
+
+Maintain sufficient historical information to explain:
+
+- What changed.
+- What the previous value was.
+- What the new value is.
+- Who made the change.
+- When the change occurred.
+- Why the change occurred when a reason is required.
+
+---
+
+# PART 17 — BACKEND AND API REQUIREMENTS
+
+## 54. Backend responsibilities
+
+Implement trusted backend operations for:
+
+- Authentication and account status checks.
+- Registration approval.
+- Customer account allocation.
+- Product management.
+- Order submission and cancellation.
+- Order approval and quantity changes.
+- Invoice numbering and creation.
+- Invoice editing under approved rules.
+- Payment recording and editing.
+- Ledger posting and balance calculations.
+- Notification creation and delivery integration.
+- Administrative settings.
+- Reporting.
+- Backup and restore.
+
+The frontend must not be the authority for permissions, financial totals, account numbers, invoice numbers or transaction status.
+
+## 55. Transaction safety
+
+Use database transactions or equivalent atomic operations where multiple related changes must succeed together.
+
+Examples include:
+
+- Invoice creation plus ledger debit.
+- Payment creation plus ledger credit.
+- Order approval plus immutable approval records.
+- Invoice number allocation.
+- Payment or invoice corrections.
+- Customer account allocation.
+
+Prevent duplicate processing using appropriate idempotency controls.
+
+Handle retries, simultaneous requests and partial failures safely.
+
+If an external notification fails, retain the successful underlying transaction and record the notification failure for retry or review.
+
+## 56. API behavior
+
+Use consistent request validation and response formats.
+
+Distinguish:
+
+- Validation errors.
+- Authentication errors.
+- Authorization errors.
+- Missing records.
+- Duplicate requests.
+- Business-rule violations.
+- External provider failures.
+- Unexpected server errors.
+
+Never return passwords, OTPs, secret credentials or internal security-sensitive data.
+
+Avoid exposing sensitive database details in API responses.
+
+Document important endpoints and their required permissions.
+
+---
+
+# PART 18 — FILES, PDFS AND EXTERNAL SERVICES
+
+## 57. File and image storage
+
+Use a suitable storage mechanism for product images, the business logo and generated invoice documents if persistent file storage is required.
+
+Validate uploaded file types, sizes and access.
+
+Do not expose private customer documents through unrestricted public URLs.
+
+Use appropriate authenticated access or time-limited links for private invoice documents.
+
+Changing a logo must not corrupt previously generated historical invoices. Preserve the necessary invoice rendering data or document-generation policy so historical records remain interpretable.
+
+## 58. PDF generation
+
+Generate invoice PDFs from authoritative saved invoice data.
+
+Requirements:
+
+- Professional design.
+- Required yellow line and logo placement.
+- Correct business title.
+- Correct customer and account details.
+- Correct invoice number and date.
+- Correct line items and amounts.
+- Correct grand total.
+- Readable text and page breaks.
+- Consistent print and digital output.
+
+Verify PDFs using representative invoices with different item counts and long product names.
+
+Do not treat a screenshot of the invoice screen as an acceptable substitute for a proper PDF document.
+
+## 59. SMS integration
+
+Create a configurable SMS provider integration.
+
+Support the required business events and record relevant delivery status when supported.
+
+Store provider credentials securely.
+
+Use safe retry behavior and avoid duplicate messages.
+
+Provide an operational status indicator for configuration failures.
+
+If credentials are missing, show that SMS integration is not configured and explain what is needed. Do not simulate successful delivery in production.
+
+## 60. WhatsApp contact
+
+The registration message directs customers to contact BRB through WhatsApp to obtain their account number.
+
+Make the contact number configurable.
+
+Do not invent the actual number.
+
+Ensure that the contact link is correctly constructed from the configured number and behaves appropriately on mobile and desktop.
+
+---
+
+# PART 19 — REPORTING, AUDIT AND OPERATIONS
+
+## 61. Audit logging
+
+Maintain an audit trail for sensitive operations, including:
+
+- Customer approval and rejection.
+- Account blocking and unblocking.
+- Product changes.
+- Order approval and status changes.
+- Quantity reductions and their reasons.
+- Administrator-added order items.
+- Invoice creation and edits.
+- Payment creation and edits.
+- Ledger corrections, where authorized.
+- Role and permission changes.
+- System setting changes.
+- Backup and restoration operations.
+
+Include the responsible actor, event, relevant record, timestamp and necessary before/after information.
+
+Protect audit records against unauthorized modification.
+
+Do not log passwords, OTPs, access tokens or other secrets.
+
+## 62. Backup and restore
+
+The administrative system must support backup and restoration.
+
+Design a reliable backup and recovery process that includes the data necessary to restore the application to a consistent state.
+
+Address:
+
+- Database records.
+- Required persistent files.
+- Encryption where appropriate.
+- Access controls.
+- Backup integrity verification.
+- Retention configuration.
+- Restoration testing.
+- Failure reporting.
+- Recovery documentation.
+
+The exact schedule, destination, retention period and recovery objectives require confirmation.
+
+Do not claim backup/restore is operational until a real backup has been created and a restoration has been verified in a safe environment.
+
+Never overwrite production data during a restoration test without explicit authorization.
+
+## 63. Operational monitoring
+
+Provide appropriate error logging and diagnostics.
+
+Monitor failed authentication attempts, backend failures, external integration failures and critical transaction errors.
+
+Use environment-specific logging that avoids exposing sensitive data.
+
+Do not show internal stack traces or credentials to customers.
+
+Provide actionable error information to authorized operators.
+
+---
+
+# PART 20 — TESTING AND ACCEPTANCE CRITERIA
+
+## 64. Testing strategy
+
+Implement automated tests where feasible, including unit tests, integration tests and end-to-end tests.
+
+Test the real backend and database integration, not just isolated frontend components.
+
+Create repeatable test data and ensure tests do not corrupt production data.
+
+Include positive, negative, boundary and concurrent-operation cases.
+
+## 65. Customer account acceptance tests
+
+Verify that:
+
+1. Account numbers follow the specified sequential format.
+2. Concurrent account creation cannot produce duplicates.
+3. Registration requires the required fields.
+4. OTP expiry and attempt limits work.
+5. Pending registrations cannot log in.
+6. Approved customers can log in when otherwise eligible.
+7. Rejected customers cannot activate their accounts.
+8. Blocked customers cannot log in or continue accessing protected data.
+9. Password reset requires the appropriate verification process.
+10. One customer cannot access another customer's records.
+11. Customer accounts cannot access administrative functions.
+
+## 66. Product and order acceptance tests
+
+Verify that:
+
+1. Products are separated into the two specified categories.
+2. A single order can contain products from both categories.
+3. Product prices are not shown to customers.
+4. Deactivated products remain visible but cannot be ordered.
+5. Order review shows the correct products and quantities.
+6. Successful submission creates one persistent order with a unique number.
+7. Failed submissions do not produce false success messages.
+8. The original customer request remains unchanged.
+9. Administrators can approve quantities independently.
+10. Reduced quantities require a reason.
+11. Administrator-added products are labeled `Added by BRB`.
+12. Customer cancellation works only in the permitted statuses.
+13. Cancelled orders remain in order history.
+14. Invalid status transitions are rejected.
+
+## 67. Invoice acceptance tests
+
+Verify that:
+
+1. An invoice can be created from an eligible approved order.
+2. An invoice can be created independently for offline sales.
+3. Customer selection and search work.
+4. Product quantities and rates are validated.
+5. Product totals and grand totals are calculated correctly.
+6. Invoice numbers follow the configured sequential sequence.
+7. Concurrent invoice creation cannot produce duplicate numbers.
+8. Saved invoices contain all required information.
+9. PDF and print output match the saved invoice.
+10. Invoice edits update accounting records correctly.
+11. Duplicate invoice submissions are prevented.
+12. Customers cannot edit invoices.
+13. Missing required business configuration is handled explicitly.
+
+## 68. Payment and ledger acceptance tests
+
+Verify that:
+
+1. Payments can be recorded using all specified payment methods.
+2. Required payment fields are validated.
+3. A saved invoice produces the correct ledger debit.
+4. A saved payment produces the correct ledger credit.
+5. Outstanding balances agree with the ledger.
+6. Running balances are correct for chronological transactions.
+7. Duplicate requests cannot double-post a debit or credit.
+8. Authorized edits follow the approved accounting policy.
+9. Historical changes remain auditable.
+10. Customers cannot edit or delete ledger entries.
+11. Customers cannot see ledger records outside the permitted 12-month window.
+12. Administrators can retrieve older retained records.
+13. Searches and date filters return the correct records.
+14. Concurrent invoice and payment operations do not corrupt balances.
+
+Test edge cases such as a payment equal to the balance, a partial payment, a payment larger than the balance and a corrected transaction. The expected treatment of overpayments and credit balances must follow the confirmed accounting policy.
+
+## 69. Notification acceptance tests
+
+Verify that:
+
+1. Required events create persistent app notifications.
+2. Notification links open the correct authorized records.
+3. SMS integration uses the configured provider.
+4. Provider failures are recorded accurately.
+5. Failed notification delivery does not reverse a valid transaction.
+6. Retries do not create duplicate financial transactions or duplicate notifications unintentionally.
+7. Delivery statuses reflect the available provider evidence.
+8. Notification history displays the correct recipient, message, date and time.
+
+## 70. Security acceptance tests
+
+Verify that:
+
+- Customer A cannot read or modify Customer B's information.
+- A customer cannot access the Admin Panel.
+- A customer cannot assign themselves an administrative role.
+- Protected backend endpoints reject unauthorized requests.
+- Blocked users cannot bypass account restrictions.
+- Invoice and payment amounts cannot be manipulated through client requests.
+- Account and invoice numbers cannot be forged or duplicated.
+- Sensitive settings cannot be changed without permission.
+- File access respects authorization.
+- OTPs and credentials are not exposed in logs or public responses.
+- Invalid input and repeated requests are handled safely.
+- Financial operations remain consistent under concurrent requests.
+
+## 71. UI and responsive acceptance tests
+
+Verify the application at representative mobile, tablet and desktop sizes.
+
+Check:
+
+- Login and registration layouts.
+- Bottom navigation.
+- Product cards and details.
+- Order review and approval.
+- Invoice forms and tables.
+- Payment forms.
+- Ledger history.
+- Notification center.
+- Administrative dashboard.
+- PDF preview and print output.
+
+Ensure that forms are usable on Android-sized screens and that tables, dialogs and long records remain accessible on small devices.
+
+## 72. Completion gate
+
+The application is not complete merely because it compiles or renders.
+
+Before declaring completion:
+
+- Run available tests.
+- Fix identified errors.
+- Verify critical workflows end to end.
+- Confirm database persistence.
+- Verify customer isolation and administrator authorization.
+- Reconcile invoice, payment, ledger and outstanding-balance calculations.
+- Verify sequential account, order and invoice numbering.
+- Verify notification integration behavior.
+- Verify PDF output.
+- Verify backup and restore if those functions are claimed to be operational.
+- Confirm that no required feature has been silently omitted.
+- Document any blocked requirement or unavailable external integration.
+
+Do not claim a test passed unless it actually ran and its result supports that claim.
+
+---
+
+# PART 21 — DEPLOYMENT AND HANDOVER
+
+## 73. Environment configuration
+
+Use separate development and production configuration.
+
+Document all required environment variables and secrets without publishing their values.
+
+Do not hardcode production credentials into source files.
+
+Document the setup of:
+
+- Database.
+- Authentication.
+- Backend.
+- File storage.
+- OTP/SMS provider.
+- PDF generation.
+- Hosting.
+- Domain and HTTPS.
+- Backups.
+
+Use appropriate migrations and a controlled initial administrator setup process.
+
+Do not create publicly known default administrator credentials.
+
+## 74. Production readiness
+
+Before production deployment, verify:
+
+- Authentication and authorization.
+- Database permissions.
+- Required environment variables.
+- HTTPS and secure cookie/session configuration where applicable.
+- Error handling.
+- Logging.
+- Database migrations.
+- File storage access.
+- SMS provider configuration.
+- Backup configuration.
+- Restoration procedure.
+- Responsive layouts.
+- Financial consistency.
+- Security test results.
+
+Do not deploy publicly with real customer data until the required security controls and business decisions have been resolved.
+
+## 75. Handover documentation
+
+Provide:
+
+1. Architecture overview.
+2. Technology stack and reasons for the selected choices.
+3. Database schema and relationships.
+4. Environment variable template without secrets.
+5. Local development setup instructions.
+6. Database setup and migration instructions.
+7. Initial administrator setup instructions.
+8. SMS/OTP provider configuration guide.
+9. PDF/invoice configuration guide.
+10. Backup and restoration guide.
+11. Deployment guide.
+12. Test instructions and actual results.
+13. Known limitations and unresolved decisions.
+14. Operational troubleshooting guide.
+
+Keep the documentation consistent with the implementation that actually exists.
+
+---
+
+# PART 22 — IMPLEMENTATION WORKFLOW FOR GOOGLE AI STUDIO
+
+## 76. Phase 1: Requirements analysis
+
+Read this entire prompt before implementation.
+
+Create a requirements checklist mapping every numbered requirement to its implementation area and acceptance test.
+
+Identify unresolved business decisions and external dependencies.
+
+Do not omit the original requirements while creating the checklist.
+
+## 77. Phase 2: Architecture and data model
+
+Produce:
+
+- Recommended technology stack.
+- Architecture diagram or structured description.
+- Database schema.
+- Entity relationships.
+- Authentication and authorization model.
+- Transaction boundaries for invoice/payment workflows.
+- Integration plan.
+- Deployment approach.
+- Test strategy.
+
+Identify any proposed decisions requiring approval.
+
+## 78. Phase 3: Foundation
+
+Implement:
+
+- Project structure.
+- Shared design system.
+- Authentication.
+- Role-based authorization.
+- Database integration.
+- Schema migrations.
+- Error handling.
+- Secure configuration.
+- Audit logging foundations.
+
+Verify that the application can persist and retrieve real records.
+
+## 79. Phase 4: Customer application
+
+Implement customer registration, login, account status handling, home screen, product browsing, order submission, order history, account history and notification center.
+
+Verify customer data isolation before proceeding to more sensitive financial workflows.
+
+## 80. Phase 5: Administrative application
+
+Implement separate administrative login, dashboard, customer management, product management, order review, staff permissions and settings.
+
+Verify the authorization of every sensitive operation.
+
+## 81. Phase 6: Financial workflows
+
+Implement invoice numbering, invoice creation, PDF generation, payment recording, ledger posting, running balances, outstanding balances, corrections under approved rules and audit trails.
+
+Run financial consistency tests before enabling real transactions.
+
+## 82. Phase 7: Integrations and operations
+
+Implement and verify:
+
+- OTP provider.
+- SMS provider.
+- Notification delivery tracking.
+- Persistent file storage.
+- Backup and restoration.
+- Reporting.
+
+Clearly identify external dependencies that remain unconfigured.
+
+## 83. Phase 8: Final verification
+
+Run the acceptance tests and resolve failures.
+
+Produce a final requirements matrix with these columns:
+
+| Requirement | Implementation location | Test performed | Result | Remaining issue |
+|---|---|---|---|---|
+| Customer account isolation | Actual file/module/API | Actual test | Pass/Fail/Blocked | Evidence |
+| Sequential invoice numbers | Actual file/module/API | Actual test | Pass/Fail/Blocked | Evidence |
+| Invoice-to-ledger posting | Actual file/module/API | Actual test | Pass/Fail/Blocked | Evidence |
+| Payment-to-ledger posting | Actual file/module/API | Actual test | Pass/Fail/Blocked | Evidence |
+| OTP/SMS integration | Actual integration | Actual test | Pass/Fail/Blocked | Evidence |
+| PDF generation | Actual implementation | Actual test | Pass/Fail/Blocked | Evidence |
+| Backup and restore | Actual implementation | Actual test | Pass/Fail/Blocked | Evidence |
+
+Expand the matrix to include every requirement group in this document.
+
+Use evidence from the actual implementation and test output. Never mark a feature as passed solely because its UI exists.
+
+---
+
+# PART 23 — FINAL DELIVERY REQUIREMENTS
+
+## 84. Required deliverables
+
+The final project must include:
+
+- A working customer application.
+- A separate administrative application.
+- A real backend and persistent database appropriate to the chosen architecture.
+- Secure authentication and authorization.
+- Customer registration and approval.
+- Product and order management.
+- Original and approved order records.
+- Invoice creation and PDF generation.
+- Payment management.
+- Accounting ledger and outstanding-balance calculations.
+- Persistent app notification history.
+- Configurable SMS/OTP integration.
+- Administrative reports and settings.
+- Backup and restoration implementation or a clearly documented blocked dependency.
+- Automated tests and actual test results.
+- Deployment and operational documentation.
+- Requirements traceability and a list of remaining issues.
+
+## 85. Final reporting format
+
+At the end of implementation, report the following:
+
+### A. What was built
+
+List the actual features implemented and their relevant modules.
+
+### B. Technical architecture
+
+Identify the actual frontend, backend, database, authentication provider, storage and integrations used.
+
+### C. Testing results
+
+List tests that were run, their actual results, and any tests that could not be executed.
+
+### D. Security and accounting verification
+
+Summarize the results of customer isolation, role authorization, invoice numbering, ledger consistency, duplicate prevention and transaction-integrity tests.
+
+### E. External integrations
+
+Identify which integrations are fully configured, partially configured or blocked by missing credentials or provider setup.
+
+### F. Deployment status
+
+State whether the application is local, previewed, staged or deployed to production. Do not confuse a successful preview with a production deployment.
+
+### G. Unresolved decisions
+
+List all outstanding business decisions, their consequences and the action required.
+
+### H. Known limitations
+
+Document unfinished features, failed tests, operational risks and known defects.
+
+### I. Final acceptance checklist
+
+Show each requirement group as:
+
+- Verified complete.
+- Implemented but not fully verified.
+- Blocked by a dependency.
+- Not implemented.
+
+Do not label the whole project production-ready if critical security, financial-integrity or data-recovery requirements remain unverified.
+
+---
+
+# FINAL DIRECTIVE
+
+Build the BRB Feed Industry application as a coherent, secure and maintainable business system.
+
+Preserve the specified business rules, including the separate customer and admin interfaces, sequential account and invoice numbers, hidden customer-facing product prices, mixed-category orders, immutable original requests, mandatory quantity-reduction reasons, restricted order cancellation, independent invoice creation, invoice debits, payment credits, the 12-month customer ledger view, persistent notifications and configurable integrations.
+
+Resolve technical choices transparently. Do not invent unresolved business policies. Enforce authorization and financial integrity in trusted backend operations. Test real workflows and report actual evidence.
+
+**The objective is a working application that the business can verify and prepare for production—not merely a visually convincing demonstration.**

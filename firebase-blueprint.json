@@ -1,0 +1,262 @@
+{
+  "entities": {
+    "AdminProfile": {
+      "title": "AdminProfile",
+      "description": "Verified Firebase administrator identity authorized for BRB cloud backup and sync operations.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the administrator.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Verified email address of the administrator.",
+          "minLength": 3,
+          "maxLength": 254
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Full display name of the administrator.",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "role": {
+          "type": "string",
+          "description": "Assigned administrative role.",
+          "enum": ["main_admin", "customer_staff", "order_staff", "finance_staff", "report_viewer"],
+          "minLength": 5,
+          "maxLength": 32
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp."
+        }
+      },
+      "required": ["uid", "email", "displayName", "role", "createdAt", "updatedAt"]
+    },
+    "CloudBackupSnapshot": {
+      "title": "CloudBackupSnapshot",
+      "description": "Metadata header for an integrity-verified BRB Feed Industry database backup snapshot.",
+      "type": "object",
+      "properties": {
+        "backupId": {
+          "type": "string",
+          "description": "Unique identifier of the backup snapshot.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "authorUid": {
+          "type": "string",
+          "description": "Firebase UID of the administrator who created the snapshot.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "createdByEmail": {
+          "type": "string",
+          "format": "email",
+          "description": "Verified email of the administrator who created the snapshot.",
+          "minLength": 3,
+          "maxLength": 254
+        },
+        "schemaVersion": {
+          "type": "number",
+          "description": "Database schema version number."
+        },
+        "recordCountsSummary": {
+          "type": "string",
+          "description": "Concise human-readable summary of entity counts included in the snapshot.",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "sha256Checksum": {
+          "type": "string",
+          "description": "Hex-encoded SHA-256 digest of the serialized backup payload.",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "payloadChunkCount": {
+          "type": "number",
+          "description": "Total number of subcollection chunks storing the backup payload."
+        },
+        "status": {
+          "type": "string",
+          "description": "Lifecycle status of the backup snapshot.",
+          "enum": ["uploading", "completed"],
+          "minLength": 9,
+          "maxLength": 16
+        },
+        "notes": {
+          "type": "string",
+          "description": "Administrative note describing why the backup was captured.",
+          "minLength": 0,
+          "maxLength": 500
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp."
+        }
+      },
+      "required": [
+        "backupId",
+        "authorUid",
+        "createdByEmail",
+        "schemaVersion",
+        "recordCountsSummary",
+        "sha256Checksum",
+        "payloadChunkCount",
+        "status",
+        "notes",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CloudBackupChunk": {
+      "title": "CloudBackupChunk",
+      "description": "Bounded payload chunk belonging to a parent CloudBackupSnapshot.",
+      "type": "object",
+      "properties": {
+        "chunkId": {
+          "type": "string",
+          "description": "Chunk document identifier.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "backupId": {
+          "type": "string",
+          "description": "Parent backup snapshot identifier.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "authorUid": {
+          "type": "string",
+          "description": "Firebase UID of the owning administrator.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "chunkIndex": {
+          "type": "number",
+          "description": "Zero-based sequential index of this chunk."
+        },
+        "data": {
+          "type": "string",
+          "description": "Bounded serialized/encrypted segment string (<= 400KB).",
+          "minLength": 1,
+          "maxLength": 400000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        }
+      },
+      "required": ["chunkId", "backupId", "authorUid", "chunkIndex", "data", "createdAt"]
+    },
+    "CloudAuditEvent": {
+      "title": "CloudAuditEvent",
+      "description": "Immutable cloud-replicated administrative audit trail entry.",
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "description": "Unique audit event identifier.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "authorUid": {
+          "type": "string",
+          "description": "Firebase UID of the administrator recording the cloud audit mirror.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "actorName": {
+          "type": "string",
+          "description": "Administrator display name or username.",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "action": {
+          "type": "string",
+          "description": "Action identifier.",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "entityType": {
+          "type": "string",
+          "description": "Domain entity category.",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "entityId": {
+          "type": "string",
+          "description": "Target entity identifier.",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "summary": {
+          "type": "string",
+          "description": "Non-secret human-readable audit summary.",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        }
+      },
+      "required": [
+        "eventId",
+        "authorUid",
+        "actorName",
+        "action",
+        "entityType",
+        "entityId",
+        "summary",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/admins/{adminUid}": {
+      "schema": { "$ref": "#/entities/AdminProfile" },
+      "description": "Verified Firebase administrator identities."
+    },
+    "/cloud_backups/{backupId}": {
+      "schema": { "$ref": "#/entities/CloudBackupSnapshot" },
+      "description": "BRB Feed Industry cloud backup snapshot headers."
+    },
+    "/cloud_backups/{backupId}/chunks/{chunkId}": {
+      "schema": { "$ref": "#/entities/CloudBackupChunk" },
+      "description": "Bounded payload chunks for a parent backup snapshot."
+    },
+    "/audit_events/{eventId}": {
+      "schema": { "$ref": "#/entities/CloudAuditEvent" },
+      "description": "Immutable cloud audit mirror records."
+    }
+  }
+}
