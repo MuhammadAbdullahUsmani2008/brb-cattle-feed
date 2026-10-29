@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build App Installers
 
 on:
   push:
@@ -6,31 +6,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-web:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Java Development Kit
-        uses: actions/setup-java@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          node-size: 20
+          cache: 'npm'
 
-      - name: Set up Flutter environment
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
+      - name: Install Dependencies
+        run: npm install
 
-      - name: Install project dependencies
-        run: flutter pub get
+      - name: Build Web Project
+        run: npm run build
 
-      - name: Compile APK
-        run: flutter build apk --split-per-abi
-
-      - name: Upload APK Artifacts
+      - name: Upload Web Assets
         uses: actions/upload-artifact@v4
         with:
-          name: android-apks
-          path: build/app/outputs/flutter-apk/*.apk
+          name: web-dist
+          path: dist/ # Vite outputs build files here by default
