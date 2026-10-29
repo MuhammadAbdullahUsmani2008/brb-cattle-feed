@@ -1,0 +1,36 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Java Development Kit
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Flutter environment
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install project dependencies
+        run: flutter pub get
+
+      - name: Compile APK
+        run: flutter build apk --split-per-abi
+
+      - name: Upload APK Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apks
+          path: build/app/outputs/flutter-apk/*.apk
